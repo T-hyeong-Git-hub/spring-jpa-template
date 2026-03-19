@@ -1,5 +1,6 @@
 package com.kkth.jpatemplate.domain.member.repository;
 
+import com.kkth.jpatemplate.domain.member.dto.MemberSearchCondition;
 import com.kkth.jpatemplate.domain.member.entity.Member;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 class MemberRepositoryTest {
@@ -38,6 +40,24 @@ class MemberRepositoryTest {
         List<Member> searchMember = memberRepository.searchByName("kim");
 
         //then
-        Assertions.assertThat(searchMember.size()).isEqualTo(1);
+        assertThat(searchMember.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void dynamicQueryTest() throws Exception{
+        //given
+        Member member1 = new Member("kim");
+        Member member2 = new Member("lee");
+
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        MemberSearchCondition condition = new MemberSearchCondition();
+        condition.setName("kim");
+        //when
+        List<Member> result = memberRepository.search(condition);
+
+        //then
+        assertThat(result.size()).isEqualTo(1);
     }
 }
