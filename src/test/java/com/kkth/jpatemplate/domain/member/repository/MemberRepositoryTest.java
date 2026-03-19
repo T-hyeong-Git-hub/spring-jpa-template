@@ -1,11 +1,15 @@
 package com.kkth.jpatemplate.domain.member.repository;
 
+import com.kkth.jpatemplate.domain.member.dto.MemberDto;
 import com.kkth.jpatemplate.domain.member.dto.MemberSearchCondition;
 import com.kkth.jpatemplate.domain.member.entity.Member;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -59,5 +63,34 @@ class MemberRepositoryTest {
 
         //then
         assertThat(result.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void pagingTest() throws Exception{
+
+        for (int i = 0; i < 20; i++) {
+            memberRepository.save(new Member("member" + i));
+        }
+
+        MemberSearchCondition condition = new MemberSearchCondition();
+
+        Pageable pageable = PageRequest.of(0,5);
+
+        Page<Member> result = memberRepository.searchPage(condition, pageable);
+
+        assertThat(result.getContent().size()).isEqualTo(5);
+        assertThat(result.getTotalElements()).isEqualTo(20);
+
+    }
+
+    @Test
+    public void dtoQueryTest() throws Exception{
+        memberRepository.save(new Member("kim"));
+        memberRepository.save(new Member("lee"));
+
+        List<MemberDto> result = memberRepository.findMemberDtoList();
+
+        assertThat(result.size()).isEqualTo(2);
+
     }
 }
